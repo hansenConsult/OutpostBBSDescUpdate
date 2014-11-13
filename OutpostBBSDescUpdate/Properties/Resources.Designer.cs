@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OutpostBBSDescUpdate.Properties {
-    using System;
-    
-    
+namespace OutpostBBSDescUpdate.Properties
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace OutpostBBSDescUpdate
 {
@@ -117,24 +111,24 @@ namespace OutpostBBSDescUpdate
                 m_BBSDescriptionData.FrequenciesRevisionTime = frequenciesRevisionTime;
                 m_BBSDescriptionData.PrimaryBBSsRevisionTime = bbsRevisionTime;
                 BBSDescriptionDataTacticalCallSign[] tacticalCallSigns = new BBSDescriptionDataTacticalCallSign[bbsFiles.Count()];
-                m_BBSDescriptionData.TacticalCallSign = tacticalCallSigns;
+                m_BBSDescriptionData.TacticalCallSigns = tacticalCallSigns;
                 foreach (string file in bbsFiles)
                 {
                     string callSign;
                     string BBSDescription = ReadBBSFileData(m_BBSNames[BBSNameIndex], out callSign);
 
                     BBSDescriptionDataTacticalCallSign tacticalCallSign = new BBSDescriptionDataTacticalCallSign();
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex] = tacticalCallSign;
-                    BBSDescriptionDataTacticalCallSignOriginalDescription originalDescription = new BBSDescriptionDataTacticalCallSignOriginalDescription();
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].OriginalDescription = originalDescription;
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].OriginalDescription.description = BBSDescription;
-                    BBSDescriptionDataTacticalCallSignNewDescription newDescription = new BBSDescriptionDataTacticalCallSignNewDescription();
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].NewDescription = newDescription;
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].NewDescription.description =
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex] = tacticalCallSign;
+                    BBSOriginalDescription originalDescription = new BBSOriginalDescription();
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription = originalDescription;
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription.description = BBSDescription;
+                    BBSNewDescription newDescription = new BBSNewDescription();
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription = newDescription;
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
                         BBSDescription + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex]+ "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].primary = callSign;
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].secondary = m_Secondaries[BBSNameIndex];
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].frequencies = m_Frequencies[BBSNameIndex];
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].primary = callSign;
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].secondary = m_Secondaries[BBSNameIndex];
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].frequencies = m_Frequencies[BBSNameIndex];
 
                     BBSNameIndex++;
                 }
@@ -142,7 +136,7 @@ namespace OutpostBBSDescUpdate
 
                 //m_BBSDescriptionData.SaveData(m_sUserDataPath);
             }
-            if (m_BBSDescriptionData.TacticalCallSign.Count() != comboBoxBBSName.Items.Count)
+            if (m_BBSDescriptionData.TacticalCallSigns.Count() != comboBoxBBSName.Items.Count)
             {
                 MessageBox.Show("New tactical callsign(s) added.", "BBS Description Update", MessageBoxButtons.OK);
             }
@@ -154,14 +148,14 @@ namespace OutpostBBSDescUpdate
             string text = comboBoxBBSName.SelectedItem as string;
             // read from temporary data
             var item = comboBoxBBSName.SelectedItem as ComboBoxBBSNameItem;
-            textBoxDescription.Text = m_BBSDescriptionData.TacticalCallSign[item.BBSNameIndex].NewDescription.description;
+            textBoxDescription.Text = m_BBSDescriptionData.TacticalCallSigns[item.BBSNameIndex].NewDescription.description;
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < m_BBSNames.Length; i++)
             {
-                string description = m_BBSDescriptionData.TacticalCallSign[i].NewDescription.description;
+                string description = m_BBSDescriptionData.TacticalCallSigns[i].NewDescription.description;
                 // Filter "\r"
                 string descFilt = Regex.Replace(description, @"\r\n", @"\n");
                 WriteBBSDescription(m_BBSNames[i], descFilt);

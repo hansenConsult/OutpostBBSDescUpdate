@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using System.IO;
+using System.Xml.Serialization;
 
-//namespace OutpostBBSDescUpdate
-//{
+namespace OutpostBBSDescUpdate
+{
     public partial class BBSDescriptionData
     {
         public void WriteBBSDescriptionDataToFile(string filePath, out string sError)
@@ -44,18 +40,18 @@ using System.IO;
                         
                         this.FrequenciesRevisionTime = bbsDescriptionData.FrequenciesRevisionTime;
                         this.PrimaryBBSsRevisionTime = bbsDescriptionData.PrimaryBBSsRevisionTime;
-                        this.TacticalCallSign = bbsDescriptionData.TacticalCallSign;
-                        for (int i = 0; i < bbsDescriptionData.TacticalCallSign.Length; i++)
+                        this.TacticalCallSigns = bbsDescriptionData.TacticalCallSigns;
+                        for (int i = 0; i < bbsDescriptionData.TacticalCallSigns.Length; i++)
                         {
                             BBSDescriptionDataTacticalCallSign tacticalCallSign = new BBSDescriptionDataTacticalCallSign();
-                            tacticalCallSign.frequencies = bbsDescriptionData.TacticalCallSign[i].frequencies;
-                            tacticalCallSign.OriginalDescription = new BBSDescriptionDataTacticalCallSignOriginalDescription();
-                            tacticalCallSign.OriginalDescription.description = bbsDescriptionData.TacticalCallSign[i].OriginalDescription.description;
-                            tacticalCallSign.primary = bbsDescriptionData.TacticalCallSign[i].primary;
+                            tacticalCallSign.frequencies = bbsDescriptionData.TacticalCallSigns[i].frequencies;
+                            tacticalCallSign.OriginalDescription = new BBSOriginalDescription();
+                            tacticalCallSign.OriginalDescription.description = bbsDescriptionData.TacticalCallSigns[i].OriginalDescription.description;
+                            tacticalCallSign.primary = bbsDescriptionData.TacticalCallSigns[i].primary;
                             tacticalCallSign.secondary = bbsDescriptionData.tacticalCallSignField[i].secondary;
-                            tacticalCallSign.NewDescription = new BBSDescriptionDataTacticalCallSignNewDescription();
-                            tacticalCallSign.NewDescription.description = bbsDescriptionData.TacticalCallSign[i].NewDescription.description;
-                            this.TacticalCallSign[i] = tacticalCallSign;
+                            tacticalCallSign.NewDescription = new BBSNewDescription();
+                            tacticalCallSign.NewDescription.description = bbsDescriptionData.TacticalCallSigns[i].NewDescription.description;
+                            this.TacticalCallSigns[i] = tacticalCallSign;
                         }
                     }
                     catch (Exception e)
@@ -92,9 +88,9 @@ using System.IO;
             }
             else
             {
-                sError = "File does not exist, or the length is zero.";
+                sError = "File does not exist, or it is empty.";
             }
         }
 
     }
-//}
+}
