@@ -31,7 +31,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxBBSName = new System.Windows.Forms.ComboBox();
-            this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.textBoxOutpostDataPath = new System.Windows.Forms.TextBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -39,6 +38,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
+            this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -67,15 +67,6 @@
             this.comboBoxBBSName.Size = new System.Drawing.Size(294, 21);
             this.comboBoxBBSName.TabIndex = 2;
             this.comboBoxBBSName.SelectedIndexChanged += new System.EventHandler(this.comboBoxBBSName_SelectedIndexChanged);
-            // 
-            // textBoxDescription
-            // 
-            this.textBoxDescription.AcceptsReturn = true;
-            this.textBoxDescription.Location = new System.Drawing.Point(129, 98);
-            this.textBoxDescription.Multiline = true;
-            this.textBoxDescription.Name = "textBoxDescription";
-            this.textBoxDescription.Size = new System.Drawing.Size(294, 125);
-            this.textBoxDescription.TabIndex = 3;
             // 
             // textBoxOutpostDataPath
             // 
@@ -137,6 +128,14 @@
             this.button1.Text = "Restore Original Content";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // textBoxDescription
+            // 
+            this.textBoxDescription.Location = new System.Drawing.Point(129, 98);
+            this.textBoxDescription.Multiline = true;
+            this.textBoxDescription.Name = "textBoxDescription";
+            this.textBoxDescription.Size = new System.Drawing.Size(294, 140);
+            this.textBoxDescription.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AcceptButton = this.buttonSave;
@@ -144,18 +143,19 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(530, 408);
+            this.Controls.Add(this.textBoxDescription);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.buttonPath);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.textBoxOutpostDataPath);
-            this.Controls.Add(this.textBoxDescription);
             this.Controls.Add(this.comboBoxBBSName);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Outpost BBS Description Update";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,7 +166,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBoxBBSName;
-        private System.Windows.Forms.TextBox textBoxDescription;
         private System.Windows.Forms.TextBox textBoxOutpostDataPath;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonCancel;
@@ -174,6 +173,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBoxDescription;
     }
 }
 

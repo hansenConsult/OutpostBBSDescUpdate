@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace OutpostBBSDescUpdate
 {
@@ -19,6 +20,8 @@ namespace OutpostBBSDescUpdate
         BBSDescriptionData m_BBSDescriptionData;
         string[] m_Frequencies;
         string[] m_Secondaries;
+
+        string[] m_BBSNames;
 
         private class ComboBoxBBSNameItem
         {
@@ -71,7 +74,7 @@ namespace OutpostBBSDescUpdate
             string BBSDirectory = m_OutpostDataDirectory + @"bbs.d";
             var bbsFiles = Directory.EnumerateFiles(BBSDirectory, "*.bbs", SearchOption.AllDirectories);
 
-            // Initialize data some structures
+            // Initialize some datastructures
             m_Frequencies = new string[bbsFiles.Count()];
             for (int i = 0; i < m_Frequencies.Length; i++ )
             {
@@ -82,7 +85,7 @@ namespace OutpostBBSDescUpdate
             {
                 m_Secondaries[i] = "";
             }
-            string[] bbsNames = new string[bbsFiles.Count()];
+            m_BBSNames = new string[bbsFiles.Count()];
 
             // Initialize BBS Name ComboBox with namas
             int BBSNameIndex = 0;
@@ -91,12 +94,14 @@ namespace OutpostBBSDescUpdate
                 FileInfo fileInfo = new FileInfo(file);
                 string fileName = fileInfo.Name;
                 index = fileName.LastIndexOf('.');
-                bbsNames[BBSNameIndex] = fileName.Substring(0, index);
-                comboBoxBBSName.Items.Add(new ComboBoxBBSNameItem(bbsNames[BBSNameIndex], BBSNameIndex));
+                m_BBSNames[BBSNameIndex] = fileName.Substring(0, index);
+                comboBoxBBSName.Items.Add(new ComboBoxBBSNameItem(m_BBSNames[BBSNameIndex], BBSNameIndex));
                 BBSNameIndex++;
             }
 
-            FindFrequencies();
+            DateTime frequenciesRevisionTime;
+            DateTime bbsRevisionTime;
+            FindFrequencies(out frequenciesRevisionTime, out bbsRevisionTime);
 
             string sError = "";
             BBSNameIndex = 0;
@@ -104,17 +109,19 @@ namespace OutpostBBSDescUpdate
             if (File.Exists(m_sUserDataPath))
             {
                 BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, ref m_BBSDescriptionData, out sError);
-                //m_BBSDescriptionData.ReadData(m_sUserDataPath);
+                //m_BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, out sError);
             }
             else
             {
-                // Create first time data
+                // Create first time data structure
+                m_BBSDescriptionData.FrequenciesRevisionTime = frequenciesRevisionTime;
+                m_BBSDescriptionData.PrimaryBBSsRevisionTime = bbsRevisionTime;
                 BBSDescriptionDataTacticalCallSign[] tacticalCallSigns = new BBSDescriptionDataTacticalCallSign[bbsFiles.Count()];
                 m_BBSDescriptionData.TacticalCallSign = tacticalCallSigns;
                 foreach (string file in bbsFiles)
                 {
                     string callSign;
-                    string BBSDescription = ReadBBSFileData(bbsNames[BBSNameIndex], out callSign);
+                    string BBSDescription = ReadBBSFileData(m_BBSNames[BBSNameIndex], out callSign);
 
                     BBSDescriptionDataTacticalCallSign tacticalCallSign = new BBSDescriptionDataTacticalCallSign();
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex] = tacticalCallSign;
@@ -123,7 +130,8 @@ namespace OutpostBBSDescUpdate
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].OriginalDescription.description = BBSDescription;
                     BBSDescriptionDataTacticalCallSignNewDescription newDescription = new BBSDescriptionDataTacticalCallSignNewDescription();
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].NewDescription = newDescription;
-                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].NewDescription.description = BBSDescription;
+                    m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].NewDescription.description =
+                        BBSDescription + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex]+ "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].primary = callSign;
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].secondary = m_Secondaries[BBSNameIndex];
                     m_BBSDescriptionData.TacticalCallSign[BBSNameIndex].frequencies = m_Frequencies[BBSNameIndex];
@@ -144,7 +152,6 @@ namespace OutpostBBSDescUpdate
         private void comboBoxBBSName_SelectedIndexChanged(object sender, EventArgs e)
         {
             string text = comboBoxBBSName.SelectedItem as string;
-            //string description = ReadBBSFileData(text);
             // read from temporary data
             var item = comboBoxBBSName.SelectedItem as ComboBoxBBSNameItem;
             textBoxDescription.Text = m_BBSDescriptionData.TacticalCallSign[item.BBSNameIndex].NewDescription.description;
@@ -152,8 +159,13 @@ namespace OutpostBBSDescUpdate
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            string BBSName = comboBoxBBSName.SelectedItem as string;
-            WriteBBSDescription(BBSName);
+            for (int i = 0; i < m_BBSNames.Length; i++)
+            {
+                string description = m_BBSDescriptionData.TacticalCallSign[i].NewDescription.description;
+                // Filter "\r"
+                string descFilt = Regex.Replace(description, @"\r\n", @"\n");
+                WriteBBSDescription(m_BBSNames[i], descFilt);
+            }
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -170,6 +182,8 @@ namespace OutpostBBSDescUpdate
             }
         }
 
+        // Parse a bbs file for description and primary BBS call sign.
+        // Returns description
         private string ReadBBSFileData(string BBSName, out string tacticalCallSign)
         {
             string description = "";
@@ -203,9 +217,9 @@ namespace OutpostBBSDescUpdate
             return description;
         }
 
-        private void WriteBBSDescription(string BBSName)
+        private void WriteBBSDescription(string BBSName, string description)
         {
-            string description = textBoxDescription.Text;
+            //string description = textBoxDescription.Text;
             string filePath = m_OutpostDataDirectory + @"bbs.d\" + BBSName + ".bbs";
 
             string[] lines = File.ReadAllLines(filePath);
@@ -221,97 +235,46 @@ namespace OutpostBBSDescUpdate
             File.WriteAllLines(filePath, lines);
         }
 
-        private void FindLatestRevision()
+        // Returns the path to the latest file
+        private string FindLatestRevisionFile(string filePath, string fileDescription, out DateTime revisionTime)
         {
-
-        }
-
-        private void FindFrequencies()
-        {
-            string filePath = m_OutpostDataDirectory + @"msg.d\";
+            DateTime latestRevTime = DateTime.MinValue;
+            revisionTime = latestRevTime;
             try
             {
+                // Find all files of type "fileDescription"
                 var files = from file in Directory.EnumerateFiles(filePath, "*.oms", SearchOption.AllDirectories)
                             from line in File.ReadLines(file)
-                            where line.Contains("Packet Network Frequencies")
-                            select new { File = file };
-
-                FileInfo latestFile = null;
-                foreach (var f in files)
-                {
-                    FileInfo fileInfo = new FileInfo(f.File);
-                    latestFile = fileInfo;
-                }
-                // Latest file
-                Char[] delimiters = { ' ', ',' };
-                int index = 0;
-                foreach (string line in File.ReadLines(latestFile.FullName))
-                {
-                    if (line.Length > 0 && line[0] != '#' && line.Contains("XSC"))
-                    {
-                        //char[] line2 = new char[line.Length + 1];
-                        //// Remove duplicate space and tab characters
-                        //for (int i = 0, j = 0; i < line.Length; i++)
-                        //{
-                        //    if (i < line.Length - 1)
-                        //    {
-                        //        if ((line[i] == ' ' && line[i + 1] == ' ') || (line[i] == '\t' && line[i + 1] == '\t')
-                        //            || (line[i] == ' ' && line[i + 1] == ',') || (line[i] == ',' && line[i + 1] == ' '))
-                        //            continue;
-                        //        else
-                        //        {
-                        //            line2[j++] = line[i];
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        line2[j++] = line[i];
-                        //    }
-                        //}
-                        //string line3 = new string(line2);
-                        //char[] trimChars = { '\0' };
-                        //string line4 = line3.TrimEnd(trimChars);
-                        //if (line4.Contains("XSC-1"))
-                        if (line.Contains("XSC-1"))
-                        {
-                            //string[] lineElements = line4.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                            string[] lineElements = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                            m_Frequencies[index] = string.Format("{0}, {1}", lineElements[2], lineElements[3]);
-                            if (index < m_Frequencies.Length - 1)
-                                index++;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-            try
-            {
-                var files = from file in Directory.EnumerateFiles(filePath, "*.oms", SearchOption.AllDirectories)
-                                     from line in File.ReadLines(file)
-                                     where line.Contains("Primary Tactical Calls and BBSs")
+                            where line.Contains(fileDescription)
                             select new { File = file };
 
                 // Find latest file revision
                 var lines = from file in files
                             from line in File.ReadLines(file.File)
                             where line.Contains("Last revised")
-                            select new {
+                            select new
+                            {
                                 File = file,
                                 Line = line
                             };
 
                 Char[] delimiters = { ' ', ',', '\t' };
-                DateTime lastRevisionTime = DateTime.MinValue;
                 string lastRevisionFile = "";
                 foreach (var line in lines)
                 {
                     string revision = line.Line;
                     string[] revData = revision.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
                     // Extract date
-                    string[] revDateSplit = revData[3].Split(new char[] {'-'});
+                    int dateIndex = 0;
+                    for (int i = 0; i < revData.Length; i++)
+                    {
+                        if (Char.IsNumber(revData[i], 0))
+                        {
+                            dateIndex = i;
+                            break;
+                        }
+                    }
+                    string[] revDateSplit = revData[dateIndex].Split(new char[] { '-' });
                     string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
                     int year = Convert.ToInt32(revDateSplit[2]);
                     int month = 1;
@@ -324,7 +287,7 @@ namespace OutpostBBSDescUpdate
                     }
                     int day = Convert.ToInt32(revDateSplit[0]);
                     // Extract time
-                    string[] timeElements = revData[5].Split(new char[] { ':' });
+                    string[] timeElements = revData[dateIndex + 2].Split(new char[] { ':' });
                     int hour = Convert.ToInt32(timeElements[0]);
                     int min = 0;
                     int sec = 0;
@@ -334,67 +297,88 @@ namespace OutpostBBSDescUpdate
                         sec = Convert.ToInt32(timeElements[2]);
 
                     DateTime revDate = new DateTime(year, month, day, hour, min, sec);
-                    if (revDate > lastRevisionTime)
+                    if (revDate > latestRevTime)
                     {
-                        lastRevisionTime = revDate;
+                        revisionTime = revDate;
                         lastRevisionFile = line.File.File;
                     }
                 }
+                return lastRevisionFile;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            return  "";
+        }
+
+        private void FindFrequencies(out DateTime frequenciesRevisionTime, out DateTime bbsRevisionTime)
+        {
+            frequenciesRevisionTime = DateTime.MinValue;
+            bbsRevisionTime = DateTime.MinValue;
+
+            string filePath = m_OutpostDataDirectory + @"msg.d\";
+
+            string latestRevFile = FindLatestRevisionFile(filePath, "Packet Network Frequencies", out frequenciesRevisionTime);
+
+            try
+            {
+                Char[] delimiters = { ' ', ',' };
+                int index = 0;
+                foreach (string line in File.ReadLines(latestRevFile))
+                {
+                    if (line.Length > 0 && line[0] != '#' && line.Contains("XSC-1"))
+                    {
+                        string[] lineElements = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+                        m_Frequencies[index] = string.Format("{0}, {1}", lineElements[2], lineElements[3]);
+                        if (index < m_Frequencies.Length - 1)
+                            index++;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            latestRevFile = FindLatestRevisionFile(filePath, "Primary Tactical Calls and BBSs", out bbsRevisionTime);
+
+            try
+            {
 
                 bool W1XSCSecFound = false, W2XSCSecFound = false, W3XSCSecFound = false, W4XSCSecFound = false;
-                foreach (string line in File.ReadLines(lastRevisionFile))
+                foreach (string line in File.ReadLines(latestRevFile))
                 {
                     if (line.Length > 0 && line[0] != '#' && line.Contains("XSC"))
                     {
-                        //char[] line2 = new char[line.Length + 1];
-                        //for (int i = 0, j = 0; i < line.Length; i++)
-                        //{
-                        //    // Remove duplicate space and tab characters
-                        //    if (i < line.Length - 1)
-                        //    {
-                        //        if ((line[i] == ' ' && line[i + 1] == ' ') || (line[i] == '\t' && line[i + 1] == '\t'))
-                        //            continue;
-                        //        else
-                        //        {
-                        //            line2[j++] = line[i];
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        line2[j++] = line[i];
-                        //    }
-                        //}
-                        //string line3 = new string(line2);
-                        //char[] trimChars = { '\0' };
-                        //string line4 = line3.TrimEnd(trimChars);
-                        string line4 = line.TrimEnd(new char[] {'\0'});
-                        string[] lineElements = line4.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+                        Char[] delimiters = { ' ', ',', '\t' };
+                        string[] lineElements = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
                         if (lineElements[lineElements.Length - 2].Contains("W1XSC"))
                         {
                             m_Secondaries[0] = lineElements[lineElements.Length - 1];
                             W1XSCSecFound = true;
                         }
-                        else if (line4.Contains("W2XSC"))
+                        else if (line.Contains("W2XSC"))
                         {
                             m_Secondaries[1] = lineElements[lineElements.Length - 1];
                             W2XSCSecFound = true;
                         }
-                        else if (line4.Contains("W3XSC"))
+                        else if (line.Contains("W3XSC"))
                         {
                             m_Secondaries[2] = lineElements[lineElements.Length - 1];
                             W3XSCSecFound = true;
                         }
-                        else if (line4.Contains("W4XSC"))
+                        else if (line.Contains("W4XSC"))
                         {
                             m_Secondaries[3] = lineElements[lineElements.Length - 1];
                             W4XSCSecFound = true;
                         }
-                        else if (line4.Contains("W5XSC"))
+                        else if (line.Contains("W5XSC"))
                         {
                             MessageBox.Show("New secondary tactical callsign, {0}. This application needs to be updated", "W5XSC");
                         }
-                        else if (line4.Contains("W6XSC"))
+                        else if (line.Contains("W6XSC"))
                         {
                             MessageBox.Show("New secondary tactical callsign, {0}. This application needs to be updated", "W6XSC");
                         }

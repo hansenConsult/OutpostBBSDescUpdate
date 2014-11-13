@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
 using System.Xml.Serialization;
 
 // 
@@ -23,9 +24,41 @@ using System.Xml.Serialization;
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
 [System.Xml.Serialization.XmlRootAttribute(Namespace="", IsNullable=false)]
 public partial class BBSDescriptionData {
-    
+
+    private DateTime primaryBBSsRevisionTimeField;
+
+    private DateTime frequenciesRevisionTimeField;
+
     private BBSDescriptionDataTacticalCallSign[] tacticalCallSignField;
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public DateTime FrequenciesRevisionTime
+    {
+        get
+        {
+            return this.frequenciesRevisionTimeField;
+        }
+        set
+        {
+            this.frequenciesRevisionTimeField = value;
+        }
+    }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public DateTime PrimaryBBSsRevisionTime
+    {
+        get
+        {
+            return this.primaryBBSsRevisionTimeField;
+        }
+        set
+        {
+            this.primaryBBSsRevisionTimeField = value;
+        }
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("TacticalCallSign")]
     public BBSDescriptionDataTacticalCallSign[] TacticalCallSign {
