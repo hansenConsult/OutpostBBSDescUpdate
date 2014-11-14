@@ -16,6 +16,7 @@ namespace OutpostBBSDescUpdate
         string[] m_Secondaries;
 
         string[] m_BBSNames;
+        bool m_DescriptionsChanged = false;
 
         private class ComboBoxBBSNameItem
         {
@@ -104,6 +105,43 @@ namespace OutpostBBSDescUpdate
             {
                 BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, ref m_BBSDescriptionData, out sError);
                 //m_BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, out sError);
+                if (sError.Length > 0)
+                {
+                    MessageBox.Show(sError, "BBS Description Update", MessageBoxButtons.OK);
+                }
+                // Check if new files are available.
+                if (frequenciesRevisionTime > m_BBSDescriptionData.FrequenciesRevisionTime || bbsRevisionTime > m_BBSDescriptionData.PrimaryBBSsRevisionTime)
+                {
+                    // Update revision times and new description
+                    m_BBSDescriptionData.FrequenciesRevisionTime = frequenciesRevisionTime;
+                    m_BBSDescriptionData.PrimaryBBSsRevisionTime = bbsRevisionTime;
+                    for (int i = 0; i < m_BBSDescriptionData.TacticalCallSigns.Length; i++)
+                    {
+                        m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
+                            m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription.description
+                            + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex] + "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
+                    }
+                }
+                // Check if a new version of Outpost is installed
+                string filePath = m_OutpostDataDirectory + "Outpost.glo";
+                foreach (string line in File.ReadLines(filePath))
+                {
+                    //Version=3.0.0 c144
+                    if (line.IndexOf("Version=") == 0)
+                    {
+                        string[] sections = line.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int i = 0; i < sections.Length; i++)
+                        {
+                            if (Char.IsNumber(sections[i], 0))
+                            {
+                                string[] version = line.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                                string Version = version[0];
+                                string major = version[1];
+                                string minir = version[2];
+                            }
+                        }
+                    }
+                }
             }
             else
             {
@@ -133,6 +171,10 @@ namespace OutpostBBSDescUpdate
                     BBSNameIndex++;
                 }
                 m_BBSDescriptionData.WriteBBSDescriptionDataToFile(m_sUserDataPath, out sError);
+                if (sError.Length > 0)
+                {
+                    MessageBox.Show(sError, "BBS Description Update", MessageBoxButtons.OK);
+                }
 
                 //m_BBSDescriptionData.SaveData(m_sUserDataPath);
             }
