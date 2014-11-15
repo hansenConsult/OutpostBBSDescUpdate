@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BBSDescriptionData>
+  <TacticalCallSign primary="W1XSC" secondary="W4XSC" frequencies="145.750, 223.620">
+    <OriginalDescription description="Santa Clara County ARES/RACES Packet System.  Located in San Jose.  JNOS."/>
+    <NewDescription description="Santa Clara County ARES/RACES Packet System.  Located in San Jose.  JNOS.\n Frequencies: 145.750, 223.620.\nSecondary: W4XSC"/>
+  </TacticalCallSign>
+  <TacticalCallSign primary="W2XSC" secondary="W1XSC" frequencies="145.750, 223.620">
+    <OriginalDescription description="Santa Clara County ARES/RACES Packet System.  Located on Crystal Peak (South County).  JNOS."/>
+    <NewDescription description=""/>
+  </TacticalCallSign>
+  <TacticalCallSign primary="W3XSC" secondary="" frequencies="">
+    <OriginalDescription description=""/>
+    <NewDescription description=""/>
+  </TacticalCallSign>
+</BBSDescriptionData>
