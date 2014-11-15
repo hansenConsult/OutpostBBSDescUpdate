@@ -27,12 +27,27 @@ namespace OutpostBBSDescUpdate
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class BBSDescriptionData
     {
+        private string outpostVersionField;
 
         private DateTime primaryBBSsRevisionTimeField;
 
         private DateTime frequenciesRevisionTimeField;
 
         private BBSDescriptionDataTacticalCallSign[] tacticalCallSignField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string OutpostVersion
+        {
+            get
+            {
+                return this.outpostVersionField;
+            }
+            set
+            {
+                this.outpostVersionField = value;
+            }
+        }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -90,6 +105,8 @@ namespace OutpostBBSDescUpdate
 
         private BBSNewDescription newDescriptionField;
 
+        private BBSCurrentDescription currentDescriptionField;
+
         private string primaryField;
 
         private string secondaryField;
@@ -119,6 +136,19 @@ namespace OutpostBBSDescUpdate
             set
             {
                 this.newDescriptionField = value;
+            }
+        }
+
+        /// <remarks/>
+        public BBSCurrentDescription CurrentDescription
+        {
+            get
+            {
+                return this.currentDescriptionField;
+            }
+            set
+            {
+                this.currentDescriptionField = value;
             }
         }
 
@@ -198,6 +228,32 @@ namespace OutpostBBSDescUpdate
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class BBSNewDescription
+    {
+
+        private string descriptionField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string description
+        {
+            get
+            {
+                return this.descriptionField;
+            }
+            set
+            {
+                this.descriptionField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.18020")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class BBSCurrentDescription
     {
 
         private string descriptionField;
