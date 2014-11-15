@@ -17,6 +17,7 @@ namespace OutpostBBSDescUpdate
 
         string[] m_BBSNames;
         bool m_DescriptionsChanged = false;
+        const string c_MessageBoxCaption = "BBS Description Update";
 
         private class ComboBoxBBSNameItem
         {
@@ -59,13 +60,38 @@ namespace OutpostBBSDescUpdate
                 MessageBox.Show(string.Format("Outpost Data Directory can not be found. \n{0}\n Outpost may not be installed.", m_OutpostDataDirectory), "Modify Outpost BBS Description", MessageBoxButtons.OK);
             }
 
-            this.textBoxOutpostDataPath.Text = m_OutpostDataDirectory;
-
             index = m_sUserDataPath.IndexOf("OutpostBBSDescUpdate");
             index = m_sUserDataPath.IndexOf('\\', index);
             m_UserDataDirectory = m_sUserDataPath.Substring(0, index + 1);
             m_sUserDataPath = m_UserDataDirectory + @"BBSData.xml";
 
+            // Check if a new version of Outpost is installed
+            string filePath = m_OutpostDataDirectory + "Outpost.glo";
+            foreach (string line in File.ReadLines(filePath))
+            {
+                //Version=3.0.0 c144
+                if (line.IndexOf("Version=") == 0)
+                {
+                    if (line.Contains("3.0.0"))
+                        break;
+                    else
+                    {
+                        string version = "";
+                        string[] sections = line.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int i = 0; i < sections.Length; i++)
+                        {
+                            if (Char.IsNumber(sections[i], 0))
+                            {
+                                version = sections[i];
+                                break;
+                            }
+                        }
+                        MessageBox.Show(string.Format("This version ({0}) of Outpost is not supported.", version), c_MessageBoxCaption, MessageBoxButtons.OK);
+                        //Close();
+                    }
+                }
+            }
+            
             string BBSDirectory = m_OutpostDataDirectory + @"bbs.d";
             var bbsFiles = Directory.EnumerateFiles(BBSDirectory, "*.bbs", SearchOption.AllDirectories);
 
@@ -107,7 +133,7 @@ namespace OutpostBBSDescUpdate
                 //m_BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, out sError);
                 if (sError.Length > 0)
                 {
-                    MessageBox.Show(sError, "BBS Description Update", MessageBoxButtons.OK);
+                    MessageBox.Show(sError, c_MessageBoxCaption, MessageBoxButtons.OK);
                 }
                 // Check if new files are available.
                 if (frequenciesRevisionTime > m_BBSDescriptionData.FrequenciesRevisionTime || bbsRevisionTime > m_BBSDescriptionData.PrimaryBBSsRevisionTime)
@@ -120,26 +146,6 @@ namespace OutpostBBSDescUpdate
                         m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
                             m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription.description
                             + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex] + "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
-                    }
-                }
-                // Check if a new version of Outpost is installed
-                string filePath = m_OutpostDataDirectory + "Outpost.glo";
-                foreach (string line in File.ReadLines(filePath))
-                {
-                    //Version=3.0.0 c144
-                    if (line.IndexOf("Version=") == 0)
-                    {
-                        string[] sections = line.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 0; i < sections.Length; i++)
-                        {
-                            if (Char.IsNumber(sections[i], 0))
-                            {
-                                string[] version = line.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                                string Version = version[0];
-                                string major = version[1];
-                                string minir = version[2];
-                            }
-                        }
                     }
                 }
             }
@@ -173,14 +179,12 @@ namespace OutpostBBSDescUpdate
                 m_BBSDescriptionData.WriteBBSDescriptionDataToFile(m_sUserDataPath, out sError);
                 if (sError.Length > 0)
                 {
-                    MessageBox.Show(sError, "BBS Description Update", MessageBoxButtons.OK);
+                    MessageBox.Show(sError, c_MessageBoxCaption, MessageBoxButtons.OK);
                 }
-
-                //m_BBSDescriptionData.SaveData(m_sUserDataPath);
             }
-            if (m_BBSDescriptionData.TacticalCallSigns.Count() != comboBoxBBSName.Items.Count)
+            if (m_BBSDescriptionData.TacticalCallSigns.Length != comboBoxBBSName.Items.Count)
             {
-                MessageBox.Show("New tactical callsign(s) added.", "BBS Description Update", MessageBoxButtons.OK);
+                MessageBox.Show("New tactical callsign(s) added.", c_MessageBoxCaption, MessageBoxButtons.OK);
             }
             comboBoxBBSName.SelectedIndex = 0;
         }
@@ -198,7 +202,7 @@ namespace OutpostBBSDescUpdate
             for (int i = 0; i < m_BBSNames.Length; i++)
             {
                 string description = m_BBSDescriptionData.TacticalCallSigns[i].NewDescription.description;
-                // Filter "\r"
+                // Remove all "\r" before writing to Outpost file
                 string descFilt = Regex.Replace(description, @"\r\n", @"\n");
                 WriteBBSDescription(m_BBSNames[i], descFilt);
             }
@@ -207,15 +211,6 @@ namespace OutpostBBSDescUpdate
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void buttonPath_Click(object sender, EventArgs e)
-        {
-            DialogResult result = openFileDialog1.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                m_OutpostDataDirectory = openFileDialog1.FileName;
-            }
         }
 
         // Parse a bbs file for description and primary BBS call sign.
@@ -255,7 +250,6 @@ namespace OutpostBBSDescUpdate
 
         private void WriteBBSDescription(string BBSName, string description)
         {
-            //string description = textBoxDescription.Text;
             string filePath = m_OutpostDataDirectory + @"bbs.d\" + BBSName + ".bbs";
 
             string[] lines = File.ReadAllLines(filePath);
@@ -271,7 +265,7 @@ namespace OutpostBBSDescUpdate
             File.WriteAllLines(filePath, lines);
         }
 
-        // Returns the path to the latest file
+        // Returns the path to the latest file and the revision time
         private string FindLatestRevisionFile(string filePath, string fileDescription, out DateTime revisionTime)
         {
             DateTime latestRevTime = DateTime.MinValue;
@@ -300,50 +294,62 @@ namespace OutpostBBSDescUpdate
                 {
                     string revision = line.Line;
                     string[] revData = revision.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                    // Extract date
-                    int dateIndex = 0;
-                    for (int i = 0; i < revData.Length; i++)
-                    {
-                        if (Char.IsNumber(revData[i], 0))
-                        {
-                            dateIndex = i;
-                            break;
-                        }
-                    }
-                    string[] revDateSplit = revData[dateIndex].Split(new char[] { '-' });
-                    string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-                    int year = Convert.ToInt32(revDateSplit[2]);
-                    int month = 1;
-                    for (int i = 0; i < months.Length; i++)
-                    {
-                        if (revDateSplit[1] == months[i])
-                        {
-                            month = i + 1;
-                        }
-                    }
-                    int day = Convert.ToInt32(revDateSplit[0]);
-                    // Extract time
-                    string[] timeElements = revData[dateIndex + 2].Split(new char[] { ':' });
-                    int hour = Convert.ToInt32(timeElements[0]);
-                    int min = 0;
-                    int sec = 0;
-                    if (timeElements.Length < 3)
-                        min = Convert.ToInt32(timeElements[1]);
-                    if (timeElements.Length > 2)
-                        sec = Convert.ToInt32(timeElements[2]);
+                    try
+                    { 
+                        // Extract date
+                        int dateIndex = 0;
+                        revData.First(rev => Char.IsNumber(revData[dateIndex++], 0) == true);
+                        dateIndex--;
+                        //for (int i = 0; i < revData.Length; i++)
+                        //{
+                        //    if (Char.IsNumber(revData[i], 0))
+                        //    {
+                        //        dateIndex = i;
+                        //        break;
+                        //    }
+                        //}
+                        string[] revDateSplit = revData[dateIndex].Split(new char[] { '-' });
+                        string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                        int year = Convert.ToInt32(revDateSplit[2]);
+                        int index = 0;
+                        months.First(month => months[index++] == revDateSplit[1]);
+                        int monthIndex = index;
+                        //for (int i = 0; i < months.Length; i++)
+                        //{
+                        //    if (revDateSplit[1] == months[i])
+                        //    {
+                        //        monthIndex = i + 1;
+                        //    }
+                        //}
+                        int day = Convert.ToInt32(revDateSplit[0]);
+                        // Extract time
+                        string[] timeElements = revData[dateIndex + 2].Split(new char[] { ':' });
+                        int hour = Convert.ToInt32(timeElements[0]);
+                        int min = 0;
+                        int sec = 0;
+                        if (timeElements.Length < 3)
+                            min = Convert.ToInt32(timeElements[1]);
+                        if (timeElements.Length > 2)
+                            sec = Convert.ToInt32(timeElements[2]);
 
-                    DateTime revDate = new DateTime(year, month, day, hour, min, sec);
-                    if (revDate > latestRevTime)
+                        DateTime revDate = new DateTime(year, monthIndex, day, hour, min, sec);
+                        if (revDate > latestRevTime)
+                        {
+                            revisionTime = revDate;
+                            lastRevisionFile = line.File.File;
+                        }
+                    }
+                    catch
                     {
-                        revisionTime = revDate;
-                        lastRevisionFile = line.File.File;
+                        MessageBox.Show("Can not determine revision date of bulletin. \nExiting.", c_MessageBoxCaption, MessageBoxButtons.OK);
                     }
                 }
                 return lastRevisionFile;
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message + "\nExiting.", c_MessageBoxCaption, MessageBoxButtons.OK);
+                Close();
             }
             return  "";
         }
@@ -366,7 +372,11 @@ namespace OutpostBBSDescUpdate
                     if (line.Length > 0 && line[0] != '#' && line.Contains("XSC-1"))
                     {
                         string[] lineElements = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                        m_Frequencies[index] = string.Format("{0}, {1}", lineElements[2], lineElements[3]);
+                        // Make sure we have frequency as a number
+                        if (Char.IsNumber(lineElements[2], 0) && Char.IsNumber(lineElements[3], 0))
+                        {
+                            m_Frequencies[index] = string.Format("{0}, {1}", lineElements[2], lineElements[3]);
+                        }
                         if (index < m_Frequencies.Length - 1)
                             index++;
                     }
@@ -374,7 +384,7 @@ namespace OutpostBBSDescUpdate
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message, c_MessageBoxCaption, MessageBoxButtons.OK);
             }
 
             latestRevFile = FindLatestRevisionFile(filePath, "Primary Tactical Calls and BBSs", out bbsRevisionTime);
@@ -425,8 +435,19 @@ namespace OutpostBBSDescUpdate
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message, c_MessageBoxCaption, MessageBoxButtons.OK);
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < m_BBSDescriptionData.TacticalCallSigns.Length; i++)
+            {
+                m_BBSDescriptionData.TacticalCallSigns[i].NewDescription.description =
+                    m_BBSDescriptionData.TacticalCallSigns[i].OriginalDescription.description;
+            }
+
+        }
+
     }
 }

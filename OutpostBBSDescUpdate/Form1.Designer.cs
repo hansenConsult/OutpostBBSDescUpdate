@@ -31,12 +31,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxBBSName = new System.Windows.Forms.ComboBox();
-            this.textBoxOutpostDataPath = new System.Windows.Forms.TextBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.buttonPath = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
@@ -68,16 +64,9 @@
             this.comboBoxBBSName.TabIndex = 2;
             this.comboBoxBBSName.SelectedIndexChanged += new System.EventHandler(this.comboBoxBBSName_SelectedIndexChanged);
             // 
-            // textBoxOutpostDataPath
-            // 
-            this.textBoxOutpostDataPath.Location = new System.Drawing.Point(129, 281);
-            this.textBoxOutpostDataPath.Name = "textBoxOutpostDataPath";
-            this.textBoxOutpostDataPath.Size = new System.Drawing.Size(294, 20);
-            this.textBoxOutpostDataPath.TabIndex = 4;
-            // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(335, 373);
+            this.buttonSave.Location = new System.Drawing.Point(335, 265);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 5;
@@ -88,7 +77,7 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(431, 373);
+            this.buttonCancel.Location = new System.Drawing.Point(431, 265);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 6;
@@ -96,37 +85,15 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // buttonPath
-            // 
-            this.buttonPath.Location = new System.Drawing.Point(431, 281);
-            this.buttonPath.Name = "buttonPath";
-            this.buttonPath.Size = new System.Drawing.Size(32, 23);
-            this.buttonPath.TabIndex = 7;
-            this.buttonPath.Text = "...";
-            this.buttonPath.UseVisualStyleBackColor = true;
-            this.buttonPath.Click += new System.EventHandler(this.buttonPath_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(42, 284);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Outpost Data:";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(181, 373);
+            this.button1.Location = new System.Drawing.Point(181, 265);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(134, 23);
             this.button1.TabIndex = 9;
             this.button1.Text = "Restore Original Content";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBoxDescription
             // 
@@ -142,14 +109,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(530, 408);
+            this.ClientSize = new System.Drawing.Size(530, 304);
             this.Controls.Add(this.textBoxDescription);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.buttonPath);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
-            this.Controls.Add(this.textBoxOutpostDataPath);
             this.Controls.Add(this.comboBoxBBSName);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -166,12 +130,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBoxBBSName;
-        private System.Windows.Forms.TextBox textBoxOutpostDataPath;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button buttonPath;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBoxDescription;
     }
