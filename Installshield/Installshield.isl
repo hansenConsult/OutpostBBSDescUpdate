@@ -1894,6 +1894,7 @@
 		<col def="S255">Data</col>
 		<row><td>PROJECT_ASSISTANT_DEFAULT_FEATURE</td><td>AlwaysInstall</td></row>
 		<row><td>PROJECT_ASSISTANT_FEATURES</td><td>NonSelectable</td></row>
+		<row><td>_Built</td><td/></row>
 	</table>
 
 	<table name="ISBillBoard">
@@ -3451,7 +3452,7 @@
 		<row><td>IDS_PROGMSG_XML_UPDATE_FILE</td><td>1033</td><td>Updating XML file %s...</td><td>0</td><td/><td>1973581902</td></row>
 		<row><td>IDS_SETUPEXE_EXPIRE_MSG</td><td>1033</td><td>This setup works until %s. The setup will now exit.</td><td>0</td><td/><td>1973581902</td></row>
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>1973581902</td></row>
-		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1973601135</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>OutpostBBSDescUpdate</td><td>0</td><td/><td>1973570768</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>1973581902</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>1973581902</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_TEMPLATE</td><td>1033</td><td>[IS_SQLBROWSE_INTRO]</td><td>0</td><td/><td>1973581902</td></row>
@@ -3851,6 +3852,7 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;VSSolutionFolder&gt;\OutpostBBSDescUpdate.ico</td><td>0</td></row>
+		<row><td>_Built_10596F15C9FB4C1DB2C3AC6EDA88DAC9.exe</td><td/><td>&lt;VSSolutionFolder&gt;\OutpostBBSDescUpdate\OutpostBBSDescUpdate.ico</td><td>0</td></row>
 	</table>
 
 	<table name="IniFile">
@@ -4523,7 +4525,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>_Built</td><td>outpos_1_outpostbbsdescupdate</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>OutpostBBSDescUpdate.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built</td><td>outpos_1_outpostbbsdescupdate</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>OutpostBBSDescUpdate.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>_Built_10596F15C9FB4C1DB2C3AC6EDA88DAC9.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

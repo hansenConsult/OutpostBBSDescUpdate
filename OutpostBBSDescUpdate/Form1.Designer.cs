@@ -33,7 +33,7 @@
             this.comboBoxBBSName = new System.Windows.Forms.ComboBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonRestore = new System.Windows.Forms.Button();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
@@ -85,15 +85,15 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // button1
+            // buttonRestore
             // 
-            this.button1.Location = new System.Drawing.Point(181, 265);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(134, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Restore Original Content";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonRestore.Location = new System.Drawing.Point(181, 265);
+            this.buttonRestore.Name = "buttonRestore";
+            this.buttonRestore.Size = new System.Drawing.Size(134, 23);
+            this.buttonRestore.TabIndex = 9;
+            this.buttonRestore.Text = "Restore Original Content";
+            this.buttonRestore.UseVisualStyleBackColor = true;
+            this.buttonRestore.Click += new System.EventHandler(this.buttonRestore_Click);
             // 
             // textBoxDescription
             // 
@@ -111,7 +111,7 @@
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(530, 304);
             this.Controls.Add(this.textBoxDescription);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonRestore);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.comboBoxBBSName);
@@ -132,7 +132,7 @@
         private System.Windows.Forms.ComboBox comboBoxBBSName;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonRestore;
         private System.Windows.Forms.TextBox textBoxDescription;
     }
 }

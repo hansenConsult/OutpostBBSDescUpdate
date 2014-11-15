@@ -5,6 +5,11 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutpostBBSDescUpdate", "OutpostBBSDescUpdate\OutpostBBSDescUpdate.csproj", "{D33B5575-EB67-4862-8C1B-5280357D823E}"
 EndProject
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Installshield", "Installshield\Installshield.isproj", "{7596C6B1-21DC-4B38-A0A2-E3F850612932}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D33B5575-EB67-4862-8C1B-5280357D823E} = {D33B5575-EB67-4862-8C1B-5280357D823E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -24,6 +29,16 @@ Global
 		{D33B5575-EB67-4862-8C1B-5280357D823E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D33B5575-EB67-4862-8C1B-5280357D823E}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
 		{D33B5575-EB67-4862-8C1B-5280357D823E}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.CD_ROM|Any CPU.ActiveCfg = CD_ROM
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.CD_ROM|Any CPU.Build.0 = CD_ROM
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.Debug|Any CPU.ActiveCfg = DVD-5
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.Debug|Any CPU.Build.0 = DVD-5
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.DVD-5|Any CPU.ActiveCfg = DVD-5
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.DVD-5|Any CPU.Build.0 = DVD-5
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.Release|Any CPU.ActiveCfg = SingleImage
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.Release|Any CPU.Build.0 = SingleImage
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.SingleImage|Any CPU.ActiveCfg = SingleImage
+		{7596C6B1-21DC-4B38-A0A2-E3F850612932}.SingleImage|Any CPU.Build.0 = SingleImage
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

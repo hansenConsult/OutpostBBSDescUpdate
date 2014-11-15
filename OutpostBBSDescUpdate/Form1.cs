@@ -3,11 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace OutpostBBSDescUpdate
 {
     public partial class Form1 : Form
     {
+        //[DllImport("user32.dll")]
+        //public static extern int SendMessage(int hWnd, uint Msg, int wParam, int lParam);
+
         string m_sUserDataPath;
         string m_UserDataDirectory;
         string m_OutpostDataDirectory;
@@ -65,32 +70,6 @@ namespace OutpostBBSDescUpdate
             m_UserDataDirectory = m_sUserDataPath.Substring(0, index + 1);
             m_sUserDataPath = m_UserDataDirectory + @"BBSData.xml";
 
-            // Check if a new version of Outpost is installed
-            string filePath = m_OutpostDataDirectory + "Outpost.glo";
-            foreach (string line in File.ReadLines(filePath))
-            {
-                //Version=3.0.0 c144
-                if (line.IndexOf("Version=") == 0)
-                {
-                    if (line.Contains("3.0.0"))
-                        break;
-                    else
-                    {
-                        string version = "";
-                        string[] sections = line.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 0; i < sections.Length; i++)
-                        {
-                            if (Char.IsNumber(sections[i], 0))
-                            {
-                                version = sections[i];
-                                break;
-                            }
-                        }
-                        MessageBox.Show(string.Format("This version ({0}) of Outpost is not supported.", version), c_MessageBoxCaption, MessageBoxButtons.OK);
-                        //Close();
-                    }
-                }
-            }
             
             string BBSDirectory = m_OutpostDataDirectory + @"bbs.d";
             var bbsFiles = Directory.EnumerateFiles(BBSDirectory, "*.bbs", SearchOption.AllDirectories);
@@ -107,6 +86,8 @@ namespace OutpostBBSDescUpdate
                 m_Secondaries[i] = "";
             }
             m_BBSNames = new string[bbsFiles.Count()];
+
+            CheckOutpostVersion();
 
             // Initialize BBS Name ComboBox with namas
             int BBSNameIndex = 0;
@@ -187,6 +168,36 @@ namespace OutpostBBSDescUpdate
                 MessageBox.Show("New tactical callsign(s) added.", c_MessageBoxCaption, MessageBoxButtons.OK);
             }
             comboBoxBBSName.SelectedIndex = 0;
+        }
+
+        private void CheckOutpostVersion()
+        {
+            // Check if a new version of Outpost is installed
+            string filePath = m_OutpostDataDirectory + "Outpost.glo";
+            foreach (string line in File.ReadLines(filePath))
+            {
+                //Version=3.0.0 c144
+                if (line.IndexOf("Version=") == 0)
+                {
+                    if (line.Contains("3.0.0"))
+                        break;
+                    else
+                    {
+                        string version = "";
+                        string[] sections = line.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int i = 0; i < sections.Length; i++)
+                        {
+                            if (Char.IsNumber(sections[i], 0))
+                            {
+                                version = sections[i];
+                                break;
+                            }
+                        }
+                        MessageBox.Show(string.Format("This version ({0}) of Outpost is not supported.", version), c_MessageBoxCaption, MessageBoxButtons.OK);
+                        System.Environment.Exit(1);
+                    }
+                }
+            }
         }
 
         private void comboBoxBBSName_SelectedIndexChanged(object sender, EventArgs e)
@@ -349,7 +360,7 @@ namespace OutpostBBSDescUpdate
             catch (Exception e)
             {
                 MessageBox.Show(e.Message + "\nExiting.", c_MessageBoxCaption, MessageBoxButtons.OK);
-                Close();
+                System.Environment.Exit(1);
             }
             return  "";
         }
@@ -439,14 +450,15 @@ namespace OutpostBBSDescUpdate
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonRestore_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < m_BBSDescriptionData.TacticalCallSigns.Length; i++)
             {
                 m_BBSDescriptionData.TacticalCallSigns[i].NewDescription.description =
                     m_BBSDescriptionData.TacticalCallSigns[i].OriginalDescription.description;
             }
-
+            // Set current text
+            textBoxDescription.Text = m_BBSDescriptionData.TacticalCallSigns[comboBoxBBSName.SelectedIndex].NewDescription.description;
         }
 
     }
