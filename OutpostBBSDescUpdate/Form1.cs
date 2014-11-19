@@ -100,10 +100,13 @@ namespace OutpostBBSDescUpdate
             FindFrequencies(out frequenciesRevisionTime, out bbsRevisionTime);
 
             string sError = "";
+            string newFrequency = "";
+            string newSecondary = "";
             BBSNameIndex = 0;
             m_BBSDescriptionData = new BBSDescriptionData();
             if (File.Exists(m_sUserDataPath))
             {
+                // Work on existing data
                 BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, ref m_BBSDescriptionData, out sError);
                 //m_BBSDescriptionData.ReadBBSDescriptionDataFromFile(m_sUserDataPath, out sError);
                 if (sError.Length > 0)
@@ -115,25 +118,27 @@ namespace OutpostBBSDescUpdate
                 BBSNameIndex = 0;
                 foreach (string file in bbsFiles)
                 {
-                    string callSign;
+                    string callSign;        // Not used here
                     string BBSDescription = ReadBBSFileData(m_BBSNames[BBSNameIndex], out callSign);
 
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].CurrentDescription.description = BBSDescription;
 
                     BBSNameIndex++;
                 }
-                    // Check if new files are available.
+                // Check if new files are available.
                 if (frequenciesRevisionTime > m_BBSDescriptionData.FrequenciesRevisionTime || bbsRevisionTime > m_BBSDescriptionData.PrimaryBBSsRevisionTime)
                 {
                     // Update revision times and new description
                     m_BBSDescriptionData.FrequenciesRevisionTime = frequenciesRevisionTime;
                     m_BBSDescriptionData.PrimaryBBSsRevisionTime = bbsRevisionTime;
-                    for (int i = 0; i < m_BBSDescriptionData.TacticalCallSigns.Length; i++)
-                    {
-                        m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
-                            m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription.description
-                            + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex] + "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
-                    }
+                    newFrequency = "";
+                    if (m_Frequencies[BBSNameIndex].Length > 0)
+                        newFrequency = "\r\nFrequencies: " + m_Frequencies[BBSNameIndex] + ".";
+                    newSecondary = "";
+                    if (m_Secondaries[BBSNameIndex].Length > 0)
+                        newSecondary = "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
+                        m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].OriginalDescription.description + newFrequency + newSecondary;
                     buttonSave.Enabled = true;
                 }
             }
@@ -160,8 +165,13 @@ namespace OutpostBBSDescUpdate
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].CurrentDescription.description = BBSDescription;
                     BBSNewDescription newDescription = new BBSNewDescription();
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription = newDescription;
-                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description =
-                        BBSDescription + "\r\nFrequencies: " + m_Frequencies[BBSNameIndex]+ "." + "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
+                    newFrequency = "";
+                    if (m_Frequencies[BBSNameIndex].Length > 0)
+                        newFrequency = "\r\nFrequencies: " + m_Frequencies[BBSNameIndex] + ".";
+                    newSecondary = "";
+                    if (m_Secondaries[BBSNameIndex].Length > 0)
+                        newSecondary = "\r\nSecondary Call Sign: " + m_Secondaries[BBSNameIndex] + ".";
+                    m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].NewDescription.description = BBSDescription + newFrequency + newSecondary;
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].primary = callSign;
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].secondary = m_Secondaries[BBSNameIndex];
                     m_BBSDescriptionData.TacticalCallSigns[BBSNameIndex].frequencies = m_Frequencies[BBSNameIndex];
